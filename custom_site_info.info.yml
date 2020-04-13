@@ -1,0 +1,5 @@
+name: 'Custom site information'
+description: 'Provides a new form field in the site information section to add an API key.'
+package: 'Custom'
+type: module
+core: 8.x

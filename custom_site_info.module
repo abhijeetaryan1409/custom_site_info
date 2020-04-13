@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * This is the module to create a site api key form field for the site information section.
+ */
+
+function custom_site_info_form_system_site_information_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $default = \Drupal::config('custom_site_info.settings')->get('siteapikey.default');
+  $api_key = \Drupal::config('system.site')->get('siteapikey');
+	$form['site_information']['siteapikey'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Site API Key'),
+		'#default_value' => ($api_key ? $api_key : $default),
+	);
+
+	foreach (array_keys($form['actions']) as $action) {
+	    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+	      $form['actions'][$action]['#submit'][] = 'siteapikey_form_submit';
+        $form['actions'][$action]['#value'] = t('Update Configuration');
+	    }
+	}
+}
+
+
+/*
+ * {@inheritdoc}
+ */
+function siteapikey_form_submit(array $form, \Drupal\Core\Form\FormStateInterface $form_state){
+    $api_key = $form_state->getValues()['siteapikey'];
+    $config = \Drupal::service('config.factory')->getEditable('system.site');
+    $default = \Drupal::config('custom_site_info.settings')->get('siteapikey.default');
+    if($api_key != $default && $api_key != ''){
+      $config->set('siteapikey', $api_key)
+              ->save();
+      drupal_set_message(t('The Site API key %key has been saved successfully.', array('%key' => $api_key)), 'status');        
+    }
+    else{
+     $config->clear('siteapikey')
+              ->save(); 
+    }
+}

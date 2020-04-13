@@ -1,0 +1,14 @@
+custom_site_info.json_api:
+  path: '/page_json/{api_key}/{nid}'
+  defaults:
+    _controller: 'Drupal\custom_site_info\Controller\JsonApiController::renderApi'
+    _title: 'JSON api'
+  methods:  [GET]
+  options:
+    parameters:
+      nid:
+        type: entity:node
+  requirements:
+     _permission: 'access content'
+     _custom_access:  'Drupal\custom_site_info\Access\JsonApiAccessChecker::access'
+     #_content_type:  'page'        
